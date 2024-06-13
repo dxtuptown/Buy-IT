@@ -1,0 +1,36 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuyItWeb", "BuyItWeb\BuyItWeb.csproj", "{D7818C5D-04A3-492D-89E6-2325BA718453}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuyItData", "BuyItDataa\BuyItData.csproj", "{82A1A772-6492-4666-8A06-D7688C62892C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuyItUtility", "BuyItUtility\BuyItUtility.csproj", "{8534F8FC-6FB4-4870-949C-779BEF0A59B2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D7818C5D-04A3-492D-89E6-2325BA718453}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7818C5D-04A3-492D-89E6-2325BA718453}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7818C5D-04A3-492D-89E6-2325BA718453}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7818C5D-04A3-492D-89E6-2325BA718453}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82A1A772-6492-4666-8A06-D7688C62892C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82A1A772-6492-4666-8A06-D7688C62892C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82A1A772-6492-4666-8A06-D7688C62892C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82A1A772-6492-4666-8A06-D7688C62892C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8534F8FC-6FB4-4870-949C-779BEF0A59B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8534F8FC-6FB4-4870-949C-779BEF0A59B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8534F8FC-6FB4-4870-949C-779BEF0A59B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8534F8FC-6FB4-4870-949C-779BEF0A59B2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8A3EF37C-7E19-4CE2-AD2C-5C16DFB570E0}
+	EndGlobalSection
+EndGlobal
