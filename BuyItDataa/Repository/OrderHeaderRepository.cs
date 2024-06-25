@@ -30,5 +30,19 @@ namespace BuyItData.Repository
                 }
             }
         }
+
+        public void UpdateStripePaymentID(int id, string sessionId, string paymentIntentId)
+        {
+            var orderFromDb = _context.OrderHeaders.FirstOrDefault(u => u.OrderHeaderID == id);
+            if (!string.IsNullOrEmpty(sessionId))
+            {
+                orderFromDb.SessionID = sessionId;
+            }
+            if (!string.IsNullOrEmpty(paymentIntentId))
+            {
+                orderFromDb.PaymentIntentID = paymentIntentId;
+                orderFromDb.PaymentDate = DateTime.Now;
+            }
+        }
     }
 }

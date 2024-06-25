@@ -8,6 +8,7 @@ using System.Security.Claims;
 using BuyItUtility;
 using Microsoft.AspNetCore.Authorization;
 using Stripe.Checkout;
+using Stripe.Climate;
 
 namespace BuyItWeb.Areas.Customer.Controllers
 {
@@ -74,6 +75,7 @@ namespace BuyItWeb.Areas.Customer.Controllers
 		{
 			var claimIdentity = (ClaimsIdentity)User.Identity;
 			var claim = claimIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             ShoppingCartVM.CartList = await _unitOfWork.Carts.GetAllAsync(u => u.UserID == claim, includeProperties:"Product");
 
             ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
@@ -82,7 +84,7 @@ namespace BuyItWeb.Areas.Customer.Controllers
             ShoppingCartVM.OrderHeader.UserID = claim;
 
 			//ShoppingCartVM = new ShoppingCartVM()
-   //         { 
+            //{ 
 			//	OrderHeader = new()
 
 			//};
@@ -120,15 +122,11 @@ namespace BuyItWeb.Areas.Customer.Controllers
             var domain = "https://localhost:44351/";
             var options = new SessionCreateOptions
             {
-                PaymentMethodTypes = new List<string>
-                {
-                    "card",
-                },
-                LineItems = new List<SessionLineItemOptions>()
-                ,
+                PaymentMethodTypes = new List<string>{"card"},
+                LineItems = new List<SessionLineItemOptions>(),
                 Mode = "payment",
-                SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.OrderHeaderID}",
-                CancelUrl = domain + $"customer/cart/Index",
+                SuccessUrl = domain + $"Customer/Cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.OrderHeaderID}",
+                CancelUrl = domain + $"Customer/Cart/Failure",
             };
 
             foreach (var item in ShoppingCartVM.CartList)
@@ -151,7 +149,8 @@ namespace BuyItWeb.Areas.Customer.Controllers
 
             var service = new SessionService();
             Session session = service.Create(options);
-
+            _unitOfWork.OrderHeaders.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.OrderHeaderID, session.Id, session.PaymentIntentId);
+            await _unitOfWork.Save();
             Response.Headers.Add("Location", session.Url);
             return new StatusCodeResult(303);
 
@@ -160,7 +159,38 @@ namespace BuyItWeb.Areas.Customer.Controllers
 			//return RedirectToAction("Index", "Home");
 		}
 
-		public async Task<IActionResult> Plus(int id)
+        public async Task<IActionResult> OrderConfirmation(int id)
+        {
+
+            OrderHeader orderHeader = await _unitOfWork.OrderHeaders.GetByIdAsync(u => u.OrderHeaderID == id, includeProperties:"User");
+            if (orderHeader.PaymentStatus != SD.PaymentStatusDelayedPayment)
+            {
+                //this is an order by customer
+
+                var service = new SessionService();
+                Session session = service.Get(orderHeader.SessionID);
+
+                if (session.PaymentStatus.ToLower() == "paid")
+                {
+                    _unitOfWork.OrderHeaders.UpdateStripePaymentID(id, session.Id, session.PaymentIntentId);
+                    _unitOfWork.OrderHeaders.UpdateStatus(id, SD.StatusApproved, SD.PaymentStatusApproved);
+                    //_unitOfWork.Save();
+                }
+                HttpContext.Session.Clear();
+                
+            }
+            List<ShoppingCart> shoppingCarts = (await _unitOfWork.Carts.GetAllAsync(u => u.UserID == orderHeader.UserID)).ToList();
+            _unitOfWork.Carts.RemoveRange(shoppingCarts);
+            _unitOfWork.Save();
+            return View(id);
+        }
+
+        public IActionResult Failure()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> Plus(int id)
         {
             var cart = await _unitOfWork.Carts.GetByIdAsync(u => u.ShoppingCartID == id);
             await _unitOfWork.Carts.IncrementCount(cart, 1);
